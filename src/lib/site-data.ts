@@ -13,7 +13,7 @@ export const profile = {
   email: "chrystnelson@gmail.com",
   phone: "+234 903 631 5065",
   phoneHref: "tel:+2349036315065",
-  siteUrl: "https://chigolite.vercel.app",
+  siteUrl: "https://chigozie-one.vercel.app/",
   resume: "/Aka_Cornelius.pdf",
   headline: "Building responsive web & mobile interfaces.",
   summary:
