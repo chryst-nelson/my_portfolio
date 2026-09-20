@@ -9,11 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "axios": "^1.9.0",
-    "daisyui": "^5.0.35",
     "framer-motion": "^12.10.5",
     "lucide-react": "^0.509.0",
-    "mongoose": "^8.14.3",
     "next": "15.3.2",
     "next-themes": "^0.4.6",
     "react": "^19.0.0",

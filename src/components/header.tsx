@@ -1,228 +1,225 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, X, Moon, Sun, Monitor } from "lucide-react";
-import { useTheme } from "next-themes";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowUpRight, Menu, X } from "lucide-react";
+import ThemeToggle from "@/components/theme-toggle";
+import { navItems, profile } from "@/lib/site-data";
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { theme, setTheme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [active, setActive] = useState<string>("");
   const menuRef = useRef<HTMLDivElement>(null);
 
+  // Border + blur once the page has scrolled.
   useEffect(() => {
-    setMounted(true);
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Focus trapping for mobile menu
+  // Scroll-spy for the active nav item.
   useEffect(() => {
-    if (isMenuOpen && menuRef.current) {
-      const focusableElements = menuRef.current.querySelectorAll(
-        'a[href], button, [tabindex]:not([tabindex="-1"])'
+    const sections = navItems
+      .map((item) => document.getElementById(item.id))
+      .filter((el): el is HTMLElement => el !== null);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        });
+      },
+      { rootMargin: "-45% 0px -50% 0px" },
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
+
+  // Mobile menu: lock scroll, close on Escape, trap focus.
+  useEffect(() => {
+    if (!open) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const focusable = () =>
+      Array.from(
+        menuRef.current?.querySelectorAll<HTMLElement>("a[href], button") ?? [],
       );
-      const firstElement = focusableElements[0] as HTMLElement;
-      const lastElement = focusableElements[
-        focusableElements.length - 1
-      ] as HTMLElement;
+    focusable()[0]?.focus();
 
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === "Tab") {
-          if (e.shiftKey && document.activeElement === firstElement) {
-            e.preventDefault();
-            lastElement.focus();
-          } else if (!e.shiftKey && document.activeElement === lastElement) {
-            e.preventDefault();
-            firstElement.focus();
-          }
-        }
-        if (e.key === "Escape") {
-          setIsMenuOpen(false);
-        }
-      };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        return;
+      }
+      if (event.key !== "Tab") return;
 
-      document.addEventListener("keydown", handleKeyDown);
-      return () => document.removeEventListener("keydown", handleKeyDown);
-    }
-  }, [isMenuOpen]);
+      const items = focusable();
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
 
-  const toggleTheme = () => {
-    setTheme(resolvedTheme === "dark" ? "light" : "dark");
-  };
-
-  const navItems = [
-    { name: "Home", href: "#home", description: "Back to the homepage" },
-    { name: "About", href: "#about", description: "Learn more about me" },
-    {
-      name: "Skills",
-      href: "#skills",
-      description: "View my technical expertise",
-    },
-    {
-      name: "Experience",
-      href: "#experience",
-      description: "Explore my work history",
-    },
-    {
-      name: "Projects",
-      href: "#projects",
-      description: "See my latest projects",
-    },
-    { name: "Contact", href: "#contact", description: "Get in touch" },
-  ];
-
-  const menuVariants = {
-    hidden: { opacity: 0, y: -50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4, ease: "easeOut" },
-    },
-  };
-
-  const linkVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: (i: number) => ({
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.3, delay: i * 0.1, ease: "easeOut" },
-    }),
-  };
-
-  if (!mounted) return null;
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-base-200/50 bg-base-100/95 backdrop-blur-md shadow-md">
-      <div className="container flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Logo */}
-        <Link href="/" className="flex items-center space-x-3 group">
-          <div className="p-2 rounded-lg bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20 group-hover:shadow-lg transition-all duration-300">
-            <Monitor className="h-6 w-6 text-primary group-hover:text-accent" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent group-hover:from-primary/80 group-hover:to-accent/80 transition-all duration-300">
-              ChigoLite
-            </span>
-            <span className="text-xs text-base-content/60 hidden sm:block">
-              Innovative Web Solutions
-            </span>
-          </div>
-        </Link>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex md:items-center md:space-x-8">
-          {navItems.map((item) => (
-            <div
-              key={item.name}
-              className="tooltip tooltip-bottom"
-              data-tip={item.description}
-            >
-              <Link
-                href={item.href}
-                className={`relative text-sm font-medium transition-all duration-300 ${
-                  pathname === item.href
-                    ? "text-primary"
-                    : "text-base-content/80 hover:text-primary hover:scale-105"
-                }`}
-                aria-current={pathname === item.href ? "page" : undefined}
-                aria-label={item.description}
-              >
-                {item.name}
-                <span
-                  className={`absolute left-0 bottom-0 h-0.5 bg-gradient-to-r from-primary to-accent transition-all duration-300 ${
-                    pathname === item.href ? "w-full" : "w-0 group-hover:w-full"
-                  }`}
-                />
-              </Link>
-            </div>
-          ))}
-        </nav>
-
-        {/* Theme Toggle & Mobile Menu Button */}
-        <div className="flex items-center space-x-4" aria-live="polite">
-          <div
-            className="tooltip tooltip-bottom"
-            data-tip={`Switch to ${
-              resolvedTheme === "dark" ? "light" : "dark"
-            } theme`}
+    <>
+      <header
+        className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
+          scrolled || open
+            ? "border-b border-line bg-bg/85 backdrop-blur-md"
+            : "border-b border-transparent"
+        }`}
+      >
+        <div className="wrap flex h-16 items-center justify-between">
+          <Link
+            href="#home"
+            className="group flex items-center gap-2.5 font-mono text-sm tracking-tight"
+            aria-label={`${profile.name} — back to top`}
+            onClick={() => setOpen(false)}
           >
-            <button
-              onClick={toggleTheme}
-              className="btn btn-ghost p-2 rounded-lg bg-base-200/50 hover:bg-base-200 transition-all duration-200 hover:scale-110"
-              aria-label={`Switch to ${
-                resolvedTheme === "dark" ? "light" : "dark"
-              } theme`}
+            <span
+              className="grid h-8 w-8 place-items-center border border-line-strong font-display text-lg leading-none transition-colors group-hover:border-accent group-hover:text-accent"
+              aria-hidden="true"
             >
-              {resolvedTheme === "dark" ? (
-                <Sun className="h-6 w-6 text-primary transition-transform duration-300" />
-              ) : (
-                <Moon className="h-6 w-6 text-primary transition-transform duration-300" />
-              )}
-            </button>
-          </div>
+              ac
+            </span>
+            <span className="hidden sm:inline">
+              {profile.handle}
+              <span className="text-accent">.</span>dev
+            </span>
+          </Link>
 
-          <div className="md:hidden">
-            <button
-              onClick={toggleMenu}
-              className="btn btn-ghost p-2 rounded-lg bg-base-200/50 hover:bg-base-200 transition-all duration-200 hover:scale-110"
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          <nav aria-label="Primary" className="hidden md:block">
+            <ul className="flex items-center gap-8">
+              {navItems.map((item) => {
+                const isActive = active === item.id;
+                return (
+                  <li key={item.id}>
+                    <Link
+                      href={`#${item.id}`}
+                      aria-current={isActive ? "true" : undefined}
+                      className={`group relative flex items-baseline gap-1.5 py-2 text-sm transition-colors ${
+                        isActive ? "text-fg" : "text-muted hover:text-fg"
+                      }`}
+                    >
+                      <span className="font-mono text-[10px] text-accent">
+                        {item.index}
+                      </span>
+                      {item.label}
+                      <span
+                        className={`absolute inset-x-0 -bottom-px h-px origin-left bg-accent transition-transform duration-300 ${
+                          isActive
+                            ? "scale-x-100"
+                            : "scale-x-0 group-hover:scale-x-100"
+                        }`}
+                        aria-hidden="true"
+                      />
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+
+          <div className="flex items-center gap-3">
+            <a
+              href={profile.resume}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn hidden !px-4 !py-2.5 sm:inline-flex"
             >
-              {isMenuOpen ? (
-                <X className="h-6 w-6 text-primary" />
+              Résumé
+              <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+            </a>
+            <ThemeToggle />
+            <button
+              type="button"
+              className="grid h-10 w-10 place-items-center border border-line-strong md:hidden"
+              onClick={() => setOpen((value) => !value)}
+              aria-expanded={open}
+              aria-controls="mobile-menu"
+              aria-label={open ? "Close menu" : "Open menu"}
+            >
+              {open ? (
+                <X className="h-4 w-4" aria-hidden="true" />
               ) : (
-                <Menu className="h-6 w-6 text-primary" />
+                <Menu className="h-4 w-4" aria-hidden="true" />
               )}
             </button>
           </div>
         </div>
+      </header>
 
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div
-              ref={menuRef}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              variants={menuVariants}
-              className="absolute top-16 left-0 right-0 bg-base-100/95 backdrop-blur-md border-b border-base-200/50 shadow-lg md:hidden"
+      {/* Rendered outside <header>: its backdrop-filter would otherwise become the containing block for this fixed overlay. */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            id="mobile-menu"
+            ref={menuRef}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-x-0 bottom-0 top-16 z-40 overflow-y-auto bg-bg md:hidden"
+          >
+            <nav
+              aria-label="Mobile"
+              className="wrap flex min-h-full flex-col py-8"
             >
-              <div className="container py-6 px-4 sm:px-6 flex flex-col space-y-3">
-                {navItems.map((item, index) => (
-                  <motion.div
-                    key={item.name}
-                    variants={linkVariants}
-                    custom={index}
-                    initial="hidden"
-                    animate="visible"
+              <ul className="divide-y divide-line border-y border-line">
+                {navItems.map((item, i) => (
+                  <motion.li
+                    key={item.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.05 + i * 0.05, duration: 0.35 }}
                   >
                     <Link
-                      href={item.href}
-                      className={`block py-2 text-base font-medium rounded-lg transition-all duration-200 ${
-                        pathname === item.href
-                          ? "text-primary bg-base-200/50"
-                          : "text-base-content/90 hover:text-primary hover:bg-base-200/50"
-                      } px-3`}
-                      onClick={() => setIsMenuOpen(false)}
-                      aria-current={pathname === item.href ? "page" : undefined}
-                      aria-label={item.description}
+                      href={`#${item.id}`}
+                      onClick={() => setOpen(false)}
+                      className="flex items-baseline gap-4 py-5 font-display text-4xl"
                     >
-                      {item.name}
+                      <span className="font-mono text-xs text-accent">
+                        {item.index}
+                      </span>
+                      {item.label}
                     </Link>
-                  </motion.div>
+                  </motion.li>
                 ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </header>
+              </ul>
+              <a
+                href={profile.resume}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-solid mt-8 w-full"
+              >
+                View résumé
+                <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+              </a>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

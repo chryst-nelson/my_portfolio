@@ -1,93 +1,155 @@
 import type React from "react";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import Script from "next/script";
+import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { profile, socials } from "@/lib/site-data";
 
-const inter = Inter({ subsets: ["latin"] });
+// Self-hosted (SIL OFL) so builds and CI never depend on Google Fonts.
+const geist = localFont({
+  src: "../fonts/Geist-Variable.woff2",
+  weight: "100 900",
+  variable: "--font-geist",
+  display: "swap",
+});
+const geistMono = localFont({
+  src: "../fonts/GeistMono-Variable.woff2",
+  weight: "100 900",
+  variable: "--font-geist-mono",
+  display: "swap",
+});
+const instrument = localFont({
+  src: [
+    {
+      path: "../fonts/InstrumentSerif-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../fonts/InstrumentSerif-Italic.woff2",
+      weight: "400",
+      style: "italic",
+    },
+  ],
+  variable: "--font-instrument",
+  display: "swap",
+});
+
+const title = `${profile.name} — ${profile.role}`;
+const description = `${profile.role} building responsive web and mobile apps with React, Next.js, Tailwind CSS and React Native. Also growing in Spring Boot and Java.`;
 
 export const metadata: Metadata = {
-  title: "ChigoLite - MERN Stack Developer",
-  description:
-    "Portfolio of ChigoLite, a full-stack developer with 4+ years of MERN expertise, delivering scalable, user-centric solutions.",
+  metadataBase: new URL(profile.siteUrl),
+  title,
+  description,
   keywords: [
-    "MERN",
-    "full-stack",
+    "Frontend Developer",
     "React",
-    "Node.js",
+    "Next.js",
+    "Tailwind CSS",
+    "React Native",
+    "Spring Boot",
     "portfolio",
-    "developer",
+    "Nigeria",
   ],
+  authors: [{ name: profile.name, url: profile.siteUrl }],
   openGraph: {
-    title: "ChigoLite - MERN Stack Developer",
-    description:
-      "Explore ChigoLite's portfolio showcasing full-stack development with React, Node.js, MongoDB, and DevOps.",
-    url: "https://chigolite.vercel.app",
-    siteName: "ChigoLite Portfolio",
-    images: [{ url: "https://chigolite.vercel.app/bob.jpeg" }],
+    title,
+    description,
+    url: profile.siteUrl,
+    siteName: `${profile.shortName} — Portfolio`,
     type: "website",
   },
   twitter: {
-    card: "summary_large_image",
-    title: "ChigoLite - MERN Stack Developer",
-    description:
-      "Discover ChigoLite's full-stack development portfolio with MERN expertise.",
-    images: ["https://chigolite.vercel.app/bob.jpeg"],
+    card: "summary",
+    title,
+    description,
   },
 };
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f5f2ea" },
+    { media: "(prefers-color-scheme: dark)", color: "#0c0c0d" },
+  ],
+};
+
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: profile.name,
+  alternateName: "ChigoLite",
+  jobTitle: profile.role,
+  url: profile.siteUrl,
+  email: `mailto:${profile.email}`,
+  sameAs: [socials.github, socials.linkedin, socials.twitter],
+  knowsAbout: [
+    "React",
+    "Next.js",
+    "Tailwind CSS",
+    "React Native",
+    "Spring Boot",
+  ],
+  alumniOf: {
+    "@type": "CollegeOrUniversity",
+    name: "Enugu State University of Science and Technology",
+  },
+};
+
+const gaId = process.env.NEXT_PUBLIC_GA_ID;
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" data-theme="pink" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${geist.variable} ${geistMono.variable} ${instrument.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Person",
-              name: "ChigoLite",
-              jobTitle: "MERN Stack Developer",
-              url: "https://chigolite.vercel.app",
-              sameAs: [
-                "https://github.com/ChigoLite",
-                "https://www.linkedin.com/in/aka-cornelius-489835252",
-              ],
-              description:
-                "Full-stack developer with 4+ years of MERN expertise, delivering scalable, user-centric solutions.",
-            }),
-          }}
-        />
-        <script
-          async
-          src="https://www.googletagmanager.com/gtag/js?id=YOUR-GA-ID"
-        ></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'YOUR-GA-ID');
-      `,
-          }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
         />
       </head>
-      <body className={inter.className}>
+      <body>
         <ThemeProvider
           attribute="data-theme"
-          defaultTheme="light"
+          defaultTheme="dark"
+          themes={["light", "dark"]}
           enableSystem={false}
         >
+          <a
+            href="#about"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-fg"
+          >
+            Skip to content
+          </a>
           <Header />
-          <main className="min-h-screen">{children}</main>
+          <main>{children}</main>
           <Footer />
         </ThemeProvider>
+
+        {gaId ? (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga-init" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${gaId}');`}
+            </Script>
+          </>
+        ) : null}
       </body>
     </html>
   );

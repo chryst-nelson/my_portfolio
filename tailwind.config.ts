@@ -1,19 +1,9 @@
-import type { Config } from 'tailwindcss'
+import type { Config } from "tailwindcss";
 
+// Tailwind v4 is configured in CSS (see src/app/globals.css: @theme).
+// This file is kept only so tooling that expects a config file keeps working.
 const config: Config = {
-  content: [
-    './pages/**/*.{js,ts,jsx,tsx}',
-    './components/**/*.{js,ts,jsx,tsx}',
-      "./src/**/*.{ts,tsx}",
-  "*.{js,ts,jsx,tsx,mdx}",
-    './app/**/*.{js,ts,jsx,tsx}' // if using the app/ directory
-  ],
-  theme: {
-    extend: {
-   
-    },
-  },
-  plugins: [require('daisyui')],
-   
-}
-export default config
+  content: ["./src/**/*.{ts,tsx}"],
+};
+
+export default config;

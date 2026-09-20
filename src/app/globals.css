@@ -1,193 +1,290 @@
 @import "tailwindcss";
-@plugin "daisyui";
 
-@plugin "daisyui/theme" {
-    default: true;
-    --color-primary: #1e3a8a;
-    /* Deep blue for primary buttons, accents */
-    --color-secondary: #64748b;
-    /* Slate gray for secondary elements */
-    --color-accent: #d4af37;
-    /* Soft gold for highlights */
-    --color-neutral: #f8fafc;
-    /* Light neutral for backgrounds in light mode */
-    --color-base-100: #ffffff;
-    /* Base white for light theme */
-    --color-base-200: #f1f5f9;
-    /* Light gray for subtle contrasts */
-    --color-base-content: #1f2937;
-    /* Dark gray for text in light mode */
+/* ------------------------------------------------------------------
+   Design tokens
+   Dark ("ink") is the default; light ("paper") is toggled via
+   [data-theme="light"] which next-themes sets on <html>.
+------------------------------------------------------------------- */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0c0c0d;
+  --surface: #141415;
+  --surface-2: #1b1b1d;
+  --line: rgba(236, 233, 226, 0.1);
+  --line-strong: rgba(236, 233, 226, 0.24);
+  --fg: #ece9e2;
+  --muted: #9b978e;
+  --accent: #ff5a1f;
+  --accent-fg: #0c0c0d;
 }
 
-/* Root variables for custom properties */
-:root {
-    --my-color: #f8fafc;
-    /* Light neutral background for light mode */
-    --text-color: #1f2937;
-    /* Dark gray for text */
-    --gradient-bg: linear-gradient(135deg, #e2e8f0, #f1f5f9);
-    /* Subtle gradient for light mode */
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f5f2ea;
+  --surface: #fbf9f4;
+  --surface-2: #ece8dd;
+  --line: rgba(22, 20, 15, 0.12);
+  --line-strong: rgba(22, 20, 15, 0.3);
+  --fg: #16140f;
+  --muted: #5f5b52;
+  --accent: #c73300;
+  --accent-fg: #ffffff;
 }
 
-/* Dark theme */
-[data-theme='dark'] {
-    --my-color: #1f2937;
-    /* Dark slate for dark mode background */
-    --text-color: #e2e8f0;
-    /* Light gray for text in dark mode */
-    --color-primary: #3b82f6;
-    /* Brighter blue for dark mode accents */
-    --color-secondary: #94a3b8;
-    /* Lighter slate for secondary elements */
-    --color-accent: #f4d03f;
-    /* Slightly brighter gold for dark mode */
-    --color-neutral: #374151;
-    /* Dark neutral for backgrounds */
-    --color-base-100: #1f2937;
-    /* Dark base for dark theme */
-    --color-base-200: #374151;
-    /* Slightly lighter dark gray */
-    --color-base-content: #e2e8f0;
-    /* Light gray for text */
-    --gradient-bg: linear-gradient(135deg, #1f2937, #374151);
-    /* Subtle dark gradient */
+@theme inline {
+  --font-display: var(--font-instrument), "Times New Roman", ui-serif, serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
 }
 
-/* Custom pink theme for variety */
-[data-theme='pink'] {
-    --my-color: #fdf2f8;
-    /* Soft pink background */
-    --text-color: #4b1c3d;
-    /* Deep pinkish-purple for text */
-    --color-primary: #db2777;
-    /* Vibrant pink for primary elements */
-    --color-secondary: #9f1239;
-    /* Deep rose for secondary elements */
-    --color-accent: #f472b6;
-    /* Lighter pink for accents */
-    --color-neutral: #fce7f3;
-    /* Very light pink for backgrounds */
-    --color-base-100: #fdf2f8;
-    /* Pink base */
-    --color-base-200: #fce7f3;
-    /* Slightly darker pink */
-    --color-base-content: #4b1c3d;
-    /* Deep pinkish-purple for text */
-    --gradient-bg: linear-gradient(135deg, #fce7f3, #fdf2f8);
-    /* Soft pink gradient */
-}
-
-body {
-    background: var(--gradient-bg);
-    color: var(--text-color);
-    /* Fixed variable name */
-    font-family: 'Inter', 'Arial', sans-serif;
-    /* Professional, clean font */
-    min-height: 100vh;
-    /* Ensure full viewport height */
-    margin: 0;
-    padding: 0;
-}
-
-/* Ensure buttons and links use DaisyUI's primary/secondary colors */
-.btn-primary {
-    background-color: var(--color-primary);
-    color: var(--color-base-100);
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.btn-primary:hover {
-    background-color: color-mix(in srgb, var(--color-primary) 80%, #ffffff 20%);
-    transform: translateY(-2px);
-}
-
-.btn-secondary {
-    background-color: var(--color-secondary);
-    color: var(--color-base-content);
-}
-
-.btn-secondary:hover {
-    background-color: color-mix(in srgb, var(--color-secondary) 80%, #ffffff 20%);
-}
-
-/* Card styling for portfolio items */
-.card {
-    background-color: var(--color-base-100);
-    border: 1px solid var(--color-base-200);
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* Typography for headers */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    color: var(--text-color);
-    font-weight: 600;
-    line-height: 1.2;
-}
-
-/* Ensure links are styled consistently */
-a {
-    color: var(--color-primary);
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-a:hover {
-    color: var(--color-accent);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    body {
-        font-size: 16px;
-        /* Slightly larger font for mobile readability */
-    }
-
-    .card {
-        margin: 0.5rem;
-    }
-}
+/* ------------------------------------------------------------------
+   Base
+------------------------------------------------------------------- */
 @layer base {
-    :root {
-        --background: 255 255 255;
-        --foreground: 17 24 39;
-        --primary: 37 99 235;
-        --accent: 147 51 234;
-        --base-100: 255 255 255;
-        --base-200: 243 244 246;
-        --base-content: 31 41 55;
-        --error: 239 68 68;
-    }
+  html {
+    scroll-behavior: smooth;
+    background: var(--bg);
+  }
 
-    [data-theme="dark"] {
-        --background: 17 24 39;
-        --foreground: 243 244 246;
-        --primary: 59 130 246;
-        --accent: 168 85 247;
-        --base-100: 31 41 55;
-        --base-200: 55 65 81;
-        --base-content: 243 244 246;
-        --error: 248 113 113;
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  section[id] {
+    scroll-margin-top: 4.5rem;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-fg);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  em {
+    font-style: italic;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Components
+------------------------------------------------------------------- */
+@layer components {
+  .wrap {
+    width: 100%;
+    max-width: 78rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  @media (min-width: 640px) {
+    .wrap {
+      padding-inline: 2rem;
     }
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.85rem 1.35rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    border: 1px solid var(--line-strong);
+    color: var(--fg);
+    background: transparent;
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .btn:hover {
+    border-color: var(--fg);
+    transform: translateY(-1px);
+  }
+
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-solid {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-fg);
+  }
+
+  .btn-solid:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    filter: brightness(1.1);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1;
+    color: var(--fg);
+    border: 1px solid var(--line-strong);
+    transition:
+      border-color 0.2s ease,
+      color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .chip-dashed {
+    border-style: dashed;
+    color: var(--muted);
+  }
+
+  .field {
+    width: 100%;
+    background: transparent;
+    color: var(--fg);
+    border: 0;
+    border-bottom: 1px solid var(--line-strong);
+    padding: 0.75rem 0;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+  }
+
+  .field::placeholder {
+    color: var(--muted);
+    opacity: 0.7;
+  }
+
+  .field:focus {
+    outline: none;
+    border-bottom-color: var(--accent);
+  }
+
+  .field[aria-invalid="true"] {
+    border-bottom-color: #e5484d;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Decorative helpers
+------------------------------------------------------------------- */
+.grid-bg {
+  background-image:
+    linear-gradient(to right, var(--line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+  background-size: 72px 72px;
+  -webkit-mask-image: radial-gradient(
+    ellipse 70% 60% at 25% 25%,
+    #000 0%,
+    transparent 75%
+  );
+  mask-image: radial-gradient(
+    ellipse 70% 60% at 25% 25%,
+    #000 0%,
+    transparent 75%
+  );
+}
+
+.hatch {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--line) 0,
+    var(--line) 1px,
+    transparent 1px,
+    transparent 10px
+  );
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 48s linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.8);
+  }
+}
+
+.pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 
-    .motion-div,
-    .motion-span {
-        transition: none !important;
-        transform: none !important;
-        opacity: 1 !important;
-    }
+  .marquee-track,
+  .pulse-dot {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
 }
