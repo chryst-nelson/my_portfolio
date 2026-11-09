@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowDown, ArrowUpRight, Download } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Download, MessageSquare } from "lucide-react";
 import LocalTime from "@/components/local-time";
 import { profile } from "@/lib/site-data";
 
@@ -75,7 +76,11 @@ export default function HeroSection() {
           </motion.p>
 
           <motion.div {...rise(0.45)} className="mt-10 flex flex-wrap gap-3">
-            <a href="#projects" className="btn btn-solid">
+            <Link href="/" className="btn btn-solid">
+              Ask a question
+              <MessageSquare className="h-4 w-4" aria-hidden="true" />
+            </Link>
+            <a href="#projects" className="btn">
               View projects
               <ArrowDown className="h-4 w-4" aria-hidden="true" />
             </a>

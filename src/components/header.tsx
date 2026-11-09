@@ -142,6 +142,9 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center gap-3">
+            <Link href="/" className="btn btn-solid hidden !px-4 !py-2.5 sm:inline-flex">
+              Ask a question
+            </Link>
             <a
               href={profile.resume}
               target="_blank"
@@ -207,11 +210,14 @@ export default function Header() {
                   </motion.li>
                 ))}
               </ul>
+              <Link href="/" onClick={() => setOpen(false)} className="btn btn-solid mt-8 w-full">
+                Ask a question
+              </Link>
               <a
                 href={profile.resume}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-solid mt-8 w-full"
+                className="btn mt-3 w-full"
               >
                 View résumé
                 <ArrowUpRight className="h-4 w-4" aria-hidden="true" />

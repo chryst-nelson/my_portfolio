@@ -84,6 +84,14 @@
   em {
     font-style: italic;
   }
+
+  /* Admin was authored on Tailwind v3, where bare borders were gray-200. */
+  .admin-root,
+  .admin-root *,
+  .admin-root ::before,
+  .admin-root ::after {
+    border-color: var(--color-slate-200);
+  }
 }
 
 /* ------------------------------------------------------------------

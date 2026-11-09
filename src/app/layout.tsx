@@ -4,8 +4,7 @@ import Script from "next/script";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import Header from "@/components/header";
-import Footer from "@/components/footer";
+import { ChatProvider } from "@/lib/chat/ChatProvider";
 import { profile, socials } from "@/lib/site-data";
 
 // Self-hosted (SIL OFL) so builds and CI never depend on Google Fonts.
@@ -125,15 +124,7 @@ export default function RootLayout({
           themes={["light", "dark"]}
           enableSystem={false}
         >
-          <a
-            href="#about"
-            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-fg"
-          >
-            Skip to content
-          </a>
-          <Header />
-          <main>{children}</main>
-          <Footer />
+          <ChatProvider>{children}</ChatProvider>
         </ThemeProvider>
 
         {gaId ? (

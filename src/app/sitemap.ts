@@ -2,15 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://chigolite.vercel.app";
-  const pages = [
-    "", // Root
-    "#home",
-    "#about",
-    "#skills",
-    "#experience",
-    "#projects",
-    "#contact",
-  ];
+  const pages = ["", "portfolio"];
 
   return pages.map((path) => ({
     url: `${baseUrl}/${path}`,

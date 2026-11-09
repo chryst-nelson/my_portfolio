@@ -19,7 +19,7 @@ export const profile = {
   summary:
     "Frontend developer working with React.js, Next.js, Tailwind CSS, Material UI and React Native. I build reusable UI components, integrate REST APIs, implement JWT authentication and ship real-time interfaces with Socket.IO.",
   availability: "Open to frontend roles",
-  now: "Building an AI-powered portfolio with Spring Boot and LLM integration",
+  now: "Building a portfolio with a Spring Boot answer engine",
 } as const;
 
 export const socials = {
@@ -240,11 +240,11 @@ export const projects: Project[] = [
   },
   {
     id: "ai-portfolio",
-    title: "AI-Powered Portfolio",
-    kind: "Spring Boot + LLM",
+    title: "Interactive Portfolio",
+    kind: "Spring Boot + Next.js",
     status: "in-progress",
     summary:
-      "An interactive portfolio whose Spring Boot backend uses LLM integration to answer visitor questions about projects, skills and experience.",
-    technologies: ["Spring Boot", "Java", "REST APIs", "LLM integration"],
+      "An interactive portfolio whose Spring Boot backend uses a rule-based answer engine to answer visitor questions about projects, skills and experience.",
+    technologies: ["Spring Boot", "Java", "REST APIs", "Answer engine"],
   },
 ];
