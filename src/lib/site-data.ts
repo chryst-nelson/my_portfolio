@@ -1,13 +1,13 @@
 /**
  * Single source of truth for portfolio content.
- * Everything here mirrors the current CV (public/Aka_Cornelius.pdf).
+ * Mirrors the current CV, plus the infrastructure this site actually runs on.
  */
 
 export const profile = {
   name: "Aka Cornelius Chigozie",
   shortName: "Aka Cornelius",
-  handle: "chigolite",
-  role: "Frontend Developer",
+  role: "Frontend Engineer",
+  positioning: "Frontend engineer with backend and DevOps experience",
   location: "Nigeria",
   timezone: "Africa/Lagos",
   email: "chrystnelson@gmail.com",
@@ -15,11 +15,10 @@ export const profile = {
   phoneHref: "tel:+2349036315065",
   siteUrl: "https://chigozie-one.vercel.app/",
   resume: "/Aka_Cornelius.pdf",
-  headline: "Building responsive web & mobile interfaces.",
+  headline: "Frontend engineer who also builds the API and ships it.",
   summary:
-    "Frontend developer working with React.js, Next.js, Tailwind CSS, Material UI and React Native. I build reusable UI components, integrate REST APIs, implement JWT authentication and ship real-time interfaces with Socket.IO.",
-  availability: "Open to frontend roles",
-  now: "Building a portfolio with a Spring Boot answer engine",
+    "I build interfaces with React, Next.js and Tailwind, write the services behind them in Node and Spring Boot, and run them in production with Docker and GitHub Actions. This site is one example: the page, the API and the server it runs on are all mine.",
+  openTo: "Frontend and full-stack roles",
 } as const;
 
 export const socials = {
@@ -29,143 +28,90 @@ export const socials = {
 } as const;
 
 export const navItems = [
-  { id: "about", label: "About", index: "01" },
-  { id: "skills", label: "Skills", index: "02" },
-  { id: "experience", label: "Experience", index: "03" },
-  { id: "projects", label: "Projects", index: "04" },
-  { id: "contact", label: "Contact", index: "05" },
-] as const;
-
-export const stackTicker = [
-  "React.js",
-  "Next.js",
-  "JavaScript (ES6+)",
-  "Tailwind CSS",
-  "Material UI",
-  "React Native",
-  "Socket.IO",
-  "REST APIs",
-  "JWT Auth",
-  "Firebase",
-  "MongoDB",
-  "PostgreSQL",
-  "GitHub Actions",
-  "Docker",
+  { id: "work", label: "Work" },
+  { id: "stack", label: "Stack" },
+  { id: "experience", label: "Experience" },
+  { id: "about", label: "About" },
+  { id: "contact", label: "Contact" },
 ] as const;
 
 export const about = {
-  lead: "I turn designs and API contracts into fast, accessible interfaces that hold up on real devices.",
-  body: "Most of my work sits in the React ecosystem: reusable component architecture, state management, API integration and authentication. I care about responsiveness and usability, and I'm growing my backend skills with Spring Boot and Java so I can reason about the whole request path, not just the screen.",
-  focus: [
-    {
-      title: "Frontend engineering",
-      text: "Component architecture, responsive layouts and state management with React.js and Next.js, styled with Tailwind CSS and Material UI.",
-    },
-    {
-      title: "Mobile",
-      text: "Cross-platform apps with React Native (Expo), sharing patterns and logic with the web.",
-    },
-    {
-      title: "APIs & real-time",
-      text: "REST API integration, JWT authentication and live interfaces built on Socket.IO.",
-    },
-    {
-      title: "Backend foundations",
-      text: "Node.js and Express APIs today; Spring Boot and Java in progress.",
-    },
+  paragraphs: [
+    "I started in the browser and I still spend most of my time there: component architecture, state, forms, responsive layouts, and making an interface hold up on a cheap phone with a bad connection.",
+    "Over time I kept following the request past the screen. I've written Node and Express APIs with JWT auth, I'm building in Spring Boot and Java, and I deploy my own work: Docker images, GitHub Actions pipelines, Nginx and TLS on AWS. Knowing what happens after fetch() makes the frontend better.",
+    "My degree is in Statistics, so I'm comfortable reading data and building the dashboards that present it.",
   ],
   education: [
     {
-      title: "B.Sc. in Statistics",
+      title: "B.Sc. Statistics",
       place: "Enugu State University of Science and Technology",
-      period: "2024 – Present",
+      period: "2024 – present",
     },
     {
-      title: "Full Stack Web Development Certification",
-      place: "Coursera (Meta)",
-      period: "2023",
-    },
-  ],
-  certifications: [
-    {
-      title: "Meta Front-End / Full Stack Developer Professional Certificate",
+      title: "Meta Front-End / Full Stack Developer Certificate",
       place: "Coursera",
-    },
-    {
-      title: "Firebase for Web Development",
-      place: "Self-directed training (YouTube/Docs)",
+      period: "2023",
     },
   ],
 } as const;
 
-export interface SkillItem {
+export interface StackLayer {
   name: string;
-  /** Marks skills that are actively being learned, not yet production-proven. */
-  learning?: boolean;
+  note: string;
+  groups: { label: string; items: string[] }[];
 }
 
-export interface SkillGroup {
-  label: string;
-  items: SkillItem[];
-}
-
-export const skillGroups: SkillGroup[] = [
+export const stackLayers: StackLayer[] = [
   {
-    label: "Frontend",
-    items: [
-      { name: "React.js" },
-      { name: "Next.js" },
-      { name: "JavaScript (ES6+)" },
-      { name: "HTML5" },
-      { name: "CSS3" },
-      { name: "Tailwind CSS" },
-      { name: "Material UI" },
-      { name: "React Native (Expo)" },
-      { name: "Responsive Design" },
+    name: "Interface",
+    note: "Where I spend most of my time.",
+    groups: [
+      {
+        label: "Web",
+        items: [
+          "React.js",
+          "Next.js (App Router)",
+          "TypeScript",
+          "JavaScript (ES6+)",
+          "Tailwind CSS",
+          "Material UI",
+          "HTML5 / CSS3",
+        ],
+      },
+      { label: "Mobile", items: ["React Native (Expo)"] },
+      {
+        label: "Practice",
+        items: ["Figma-to-code", "Responsive layouts", "Accessibility", "Component testing"],
+      },
     ],
   },
   {
-    label: "Backend",
-    items: [
-      { name: "Node.js" },
-      { name: "Express.js" },
-      { name: "REST APIs" },
-      { name: "JWT Authentication" },
-      { name: "Socket.IO" },
-      { name: "Spring Boot", learning: true },
+    name: "Services",
+    note: "The APIs and data the interface depends on.",
+    groups: [
+      {
+        label: "Backend",
+        items: ["Spring Boot", "Java", "Node.js", "Express.js", "REST APIs", "JWT auth", "Socket.IO"],
+      },
+      {
+        label: "Data",
+        items: ["PostgreSQL", "Flyway migrations", "MongoDB", "Firebase"],
+      },
     ],
   },
   {
-    label: "Database & Cloud",
-    items: [
-      { name: "MongoDB" },
-      { name: "Firebase" },
-      { name: "PostgreSQL" },
-      { name: "Cloudinary" },
-    ],
-  },
-  {
-    label: "Tools & DevOps",
-    items: [
-      { name: "Git" },
-      { name: "GitHub" },
-      { name: "GitHub Actions" },
-      { name: "Docker" },
-      { name: "Postman" },
-      { name: "Vercel" },
-      { name: "Render" },
-      { name: "Figma-to-Code" },
-    ],
-  },
-  {
-    label: "Core concepts",
-    items: [
-      { name: "Component Architecture" },
-      { name: "State Management" },
-      { name: "API Integration" },
-      { name: "Authentication" },
-      { name: "Performance Optimization" },
-      { name: "Cross-Browser Compatibility" },
+    name: "Delivery",
+    note: "How it gets to production and stays there.",
+    groups: [
+      {
+        label: "Pipeline",
+        items: ["Git / GitHub", "GitHub Actions", "Docker", "GitHub Container Registry"],
+      },
+      {
+        label: "Hosting",
+        items: ["AWS EC2", "Nginx", "Let's Encrypt (TLS)", "Vercel", "Self-hosted Ollama"],
+      },
+      { label: "Tools", items: ["Postman"] },
     ],
   },
 ];
@@ -176,39 +122,33 @@ export interface ExperienceEntry {
   period: string;
   mode: string;
   bullets: string[];
-  tags: string[];
   highlight?: { value: string; label: string };
 }
 
 export const experience: ExperienceEntry[] = [
   {
-    role: "Frontend Developer (Internship)",
+    role: "Frontend Developer Intern",
     company: "NdiliaTalent",
     period: "2025 – 2026",
     mode: "Remote",
     bullets: [
-      "Developed responsive user interfaces using React.js and Tailwind CSS for a football talent discovery platform.",
-      "Integrated RESTful APIs for dynamic data rendering, authentication flows and user interactions.",
-      "Improved mobile responsiveness and reduced UI bugs by 40% through systematic component testing and refactoring.",
-      "Collaborated with backend and design teams to deliver consistent, accessible and performant interfaces.",
+      "Built responsive, accessible UI components with React.js and Tailwind CSS for a sports talent discovery platform.",
+      "Integrated REST endpoints for dynamic data, live multi-criteria search filtering and authentication flows.",
+      "Cut UI bugs and rendering defects through component testing, state refactoring and mobile responsiveness audits.",
+      "Worked with backend engineers and designers to keep the interface accessible and low-latency.",
     ],
-    tags: ["React.js", "Tailwind CSS", "REST APIs"],
-    highlight: {
-      value: "40%",
-      label: "fewer UI bugs after component testing and refactoring",
-    },
+    highlight: { value: "40%", label: "fewer UI bugs and rendering defects" },
   },
   {
     role: "Software Developer Intern",
     company: "Enugu State Tech Hub",
     period: "2022 – 2023",
-    mode: "On-site",
+    mode: "Enugu, Nigeria",
     bullets: [
-      "Built and consumed RESTful APIs with Node.js and Express, strengthening my grasp of client-server architecture and frontend integration.",
-      "Implemented JWT-based authentication and session handling for secure application login experiences.",
-      "Participated in team sprints and architecture discussions covering backend services and frontend integration.",
+      "Developed modular REST APIs with Node.js and Express for a clean client-server data architecture.",
+      "Implemented JWT-based authentication and secure session handling across dashboard features.",
+      "Took part in daily stand-ups, architecture reviews and frontend integration sprints.",
     ],
-    tags: ["Node.js", "Express", "REST APIs", "JWT"],
   },
 ];
 
@@ -216,35 +156,51 @@ export interface Project {
   id: string;
   title: string;
   kind: string;
-  status?: "in-progress";
   summary: string;
   technologies: string[];
+  /** Per-layer breakdown, used for the project that spans the whole stack. */
+  layers?: { name: string; text: string }[];
+  link?: { label: string; href: string };
 }
 
 export const projects: Project[] = [
   {
+    id: "portfolio",
+    title: "This portfolio",
+    kind: "Full stack · live",
+    summary:
+      "A portfolio with an assistant you can question. A Spring Boot answer engine replies from the data in the database, and a small self-hosted model steps in only when the rules have no answer.",
+    technologies: ["Next.js", "Spring Boot", "PostgreSQL", "Docker", "GitHub Actions", "AWS EC2", "Ollama"],
+    layers: [
+      {
+        name: "Interface",
+        text: "Next.js 15, React 19 and Tailwind on Vercel. The chat streams answers over server-sent events.",
+      },
+      {
+        name: "Services",
+        text: "Spring Boot 4 on Java 21, JPA with Flyway migrations, JWT-protected admin panel, per-IP rate limiting.",
+      },
+      {
+        name: "Delivery",
+        text: "GitHub Actions builds the image, pushes it to GHCR and deploys over SSH to EC2 behind Nginx and Let's Encrypt. PostgreSQL is managed; Ollama runs on its own server.",
+      },
+    ],
+    link: { label: "Ask the assistant", href: "/ask" },
+  },
+  {
     id: "learnerx",
     title: "LearnerX",
-    kind: "Learning management system",
+    kind: "Multi-role learning platform",
     summary:
-      "A multi-role learning platform for learners and instructors with role-based dashboard views, responsive data-driven dashboards and course and content delivery.",
-    technologies: ["Next.js", "REST APIs", "Cloudinary"],
+      "Role-based dashboards for instructors and students on the Next.js App Router, backed by REST APIs for content delivery, progress tracking and quiz analytics.",
+    technologies: ["Next.js", "Node.js", "Tailwind CSS"],
   },
   {
     id: "chat-up",
     title: "Chat-Up",
-    kind: "Real-time chat",
+    kind: "Real-time messaging",
     summary:
-      "A real-time chat application with live message rendering, chat room UI and message history views.",
-    technologies: ["React", "Socket.IO", "Redux"],
-  },
-  {
-    id: "ai-portfolio",
-    title: "Interactive Portfolio",
-    kind: "Spring Boot + Next.js",
-    status: "in-progress",
-    summary:
-      "An interactive portfolio whose Spring Boot backend uses a rule-based answer engine to answer visitor questions about projects, skills and experience.",
-    technologies: ["Spring Boot", "Java", "REST APIs", "Answer engine"],
+      "An event-driven chat interface on Socket.IO with live message delivery and room management.",
+    technologies: ["React.js", "Socket.IO", "Express"],
   },
 ];

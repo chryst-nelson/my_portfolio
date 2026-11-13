@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import ThemeToggle from "@/components/theme-toggle";
 import { navItems, profile } from "@/lib/site-data";
 
@@ -13,7 +13,6 @@ export default function Header() {
   const [active, setActive] = useState<string>("");
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Border + blur once the page has scrolled.
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
@@ -23,14 +22,14 @@ export default function Header() {
 
   // Scroll-spy for the active nav item.
   useEffect(() => {
-    const sections = navItems
-      .map((item) => document.getElementById(item.id))
+    const sections = ["home", ...navItems.map((item) => item.id)]
+      .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => el !== null);
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) setActive(entry.target.id);
+          if (entry.isIntersecting) setActive(entry.target.id === "home" ? "" : entry.target.id);
         });
       },
       { rootMargin: "-45% 0px -50% 0px" },
@@ -48,9 +47,7 @@ export default function Header() {
     document.body.style.overflow = "hidden";
 
     const focusable = () =>
-      Array.from(
-        menuRef.current?.querySelectorAll<HTMLElement>("a[href], button") ?? [],
-      );
+      Array.from(menuRef.current?.querySelectorAll<HTMLElement>("a[href], button") ?? []);
     focusable()[0]?.focus();
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -84,56 +81,37 @@ export default function Header() {
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
-          scrolled || open
-            ? "border-b border-line bg-bg/85 backdrop-blur-md"
-            : "border-b border-transparent"
+        className={`fixed inset-x-0 top-0 z-50 border-b transition-colors duration-200 ${
+          scrolled || open ? "border-line bg-bg/90 backdrop-blur" : "border-transparent"
         }`}
       >
-        <div className="wrap flex h-16 items-center justify-between">
+        <div className="wrap flex h-14 items-center justify-between">
           <Link
-            href="#home"
-            className="group flex items-center gap-2.5 font-mono text-sm tracking-tight"
-            aria-label={`${profile.name} — back to top`}
+            href="/"
+            className="flex items-baseline gap-3"
+            aria-label={`${profile.name}, home`}
             onClick={() => setOpen(false)}
           >
-            <span
-              className="grid h-8 w-8 place-items-center border border-line-strong font-display text-lg leading-none transition-colors group-hover:border-accent group-hover:text-accent"
-              aria-hidden="true"
-            >
-              ac
-            </span>
-            <span className="hidden sm:inline">
-              {profile.handle}
-              <span className="text-accent">.</span>dev
-            </span>
+            <span className="text-[0.95rem] font-semibold tracking-tight">{profile.shortName}</span>
+            <span className="mono hidden text-muted lg:inline">{profile.role}</span>
           </Link>
 
           <nav aria-label="Primary" className="hidden md:block">
-            <ul className="flex items-center gap-8">
+            <ul className="flex items-center gap-7">
               {navItems.map((item) => {
                 const isActive = active === item.id;
                 return (
                   <li key={item.id}>
                     <Link
-                      href={`#${item.id}`}
+                      href={`/#${item.id}`}
                       aria-current={isActive ? "true" : undefined}
-                      className={`group relative flex items-baseline gap-1.5 py-2 text-sm transition-colors ${
-                        isActive ? "text-fg" : "text-muted hover:text-fg"
+                      className={`border-b py-1 text-sm transition-colors ${
+                        isActive
+                          ? "border-accent text-fg"
+                          : "border-transparent text-muted hover:text-fg"
                       }`}
                     >
-                      <span className="font-mono text-[10px] text-accent">
-                        {item.index}
-                      </span>
                       {item.label}
-                      <span
-                        className={`absolute inset-x-0 -bottom-px h-px origin-left bg-accent transition-transform duration-300 ${
-                          isActive
-                            ? "scale-x-100"
-                            : "scale-x-0 group-hover:scale-x-100"
-                        }`}
-                        aria-hidden="true"
-                      />
                     </Link>
                   </li>
                 );
@@ -141,39 +119,26 @@ export default function Header() {
             </ul>
           </nav>
 
-          <div className="flex items-center gap-3">
-            <Link href="/" className="btn btn-solid hidden !px-4 !py-2.5 sm:inline-flex">
-              Ask a question
+          <div className="flex items-center gap-2">
+            <Link href="/ask" className="btn btn-solid hidden !px-3.5 !py-2 sm:inline-flex">
+              Ask the assistant
             </Link>
-            <a
-              href={profile.resume}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn hidden !px-4 !py-2.5 sm:inline-flex"
-            >
-              Résumé
-              <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-            </a>
             <ThemeToggle />
             <button
               type="button"
-              className="grid h-10 w-10 place-items-center border border-line-strong md:hidden"
+              className="grid h-9 w-9 place-items-center border border-line-strong md:hidden"
               onClick={() => setOpen((value) => !value)}
               aria-expanded={open}
               aria-controls="mobile-menu"
               aria-label={open ? "Close menu" : "Open menu"}
             >
-              {open ? (
-                <X className="h-4 w-4" aria-hidden="true" />
-              ) : (
-                <Menu className="h-4 w-4" aria-hidden="true" />
-              )}
+              {open ? <X className="h-4 w-4" aria-hidden="true" /> : <Menu className="h-4 w-4" aria-hidden="true" />}
             </button>
           </div>
         </div>
       </header>
 
-      {/* Rendered outside <header>: its backdrop-filter would otherwise become the containing block for this fixed overlay. */}
+      {/* Outside <header>: its backdrop-filter would become the containing block of this fixed overlay. */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -182,46 +147,26 @@ export default function Header() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-x-0 bottom-0 top-16 z-40 overflow-y-auto bg-bg md:hidden"
+            transition={{ duration: 0.15 }}
+            className="fixed inset-x-0 bottom-0 top-14 z-40 overflow-y-auto bg-bg md:hidden"
           >
-            <nav
-              aria-label="Mobile"
-              className="wrap flex min-h-full flex-col py-8"
-            >
+            <nav aria-label="Mobile" className="wrap flex min-h-full flex-col py-6">
               <ul className="divide-y divide-line border-y border-line">
-                {navItems.map((item, i) => (
-                  <motion.li
-                    key={item.id}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.05 + i * 0.05, duration: 0.35 }}
-                  >
+                {navItems.map((item) => (
+                  <li key={item.id}>
                     <Link
-                      href={`#${item.id}`}
+                      href={`/#${item.id}`}
                       onClick={() => setOpen(false)}
-                      className="flex items-baseline gap-4 py-5 font-display text-4xl"
+                      className="block py-4 text-2xl font-semibold tracking-tight"
                     >
-                      <span className="font-mono text-xs text-accent">
-                        {item.index}
-                      </span>
                       {item.label}
                     </Link>
-                  </motion.li>
+                  </li>
                 ))}
               </ul>
-              <Link href="/" onClick={() => setOpen(false)} className="btn btn-solid mt-8 w-full">
-                Ask a question
+              <Link href="/ask" onClick={() => setOpen(false)} className="btn btn-solid mt-6 w-full">
+                Ask the assistant
               </Link>
-              <a
-                href={profile.resume}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn mt-3 w-full"
-              >
-                View résumé
-                <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-              </a>
             </nav>
           </motion.div>
         )}

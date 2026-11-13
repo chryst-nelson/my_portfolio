@@ -1,13 +1,10 @@
 import type { MetadataRoute } from "next";
+import { profile } from "@/lib/site-data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://chigolite.vercel.app";
-  const pages = ["", "portfolio"];
-
-  return pages.map((path) => ({
-    url: `${baseUrl}/${path}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: path === "" ? 1.0 : 0.8,
-  }));
+  const baseUrl = profile.siteUrl.replace(/\/$/, "");
+  return [
+    { url: `${baseUrl}/`, lastModified: new Date(), changeFrequency: "monthly", priority: 1 },
+    { url: `${baseUrl}/ask`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
+  ];
 }

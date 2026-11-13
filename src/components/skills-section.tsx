@@ -1,57 +1,34 @@
 import Reveal from "@/components/reveal";
-import SectionHeading from "@/components/section-heading";
-import { skillGroups } from "@/lib/site-data";
+import Section from "@/components/section-heading";
+import { stackLayers } from "@/lib/site-data";
 
 export default function SkillsSection() {
   return (
-    <section
-      id="skills"
-      className="border-t border-line bg-surface/40 py-24 lg:py-32"
-    >
-      <div className="wrap">
-        <SectionHeading
-          index="02"
-          label="Skills"
-          title={
-            <>
-              The toolkit I <em className="text-accent">reach for.</em>
-            </>
-          }
-        />
+    <Section id="stack" label="Stack">
+      <Reveal>
+        <p className="max-w-2xl text-xl font-medium leading-snug tracking-tight sm:text-2xl">
+          Strongest at the interface, comfortable one layer down, and able to take it all the way to a running server.
+        </p>
+      </Reveal>
 
-        <div className="border-t border-line">
-          {skillGroups.map((group, i) => (
-            <Reveal
-              key={group.label}
-              delay={i * 0.05}
-              className="grid gap-5 border-b border-line py-8 lg:grid-cols-12"
-            >
-              <h3 className="eyebrow lg:col-span-3">
-                <span className="text-accent">
-                  {String(i + 1).padStart(2, "0")}
-                </span>{" "}
-                {group.label}
-              </h3>
-              <ul className="flex flex-wrap gap-2 lg:col-span-9">
-                {group.items.map((item) => (
-                  <li key={item.name}>
-                    <span
-                      className={`chip ${item.learning ? "chip-dashed" : ""}`}
-                    >
-                      {item.name}
-                      {item.learning && (
-                        <span className="text-[10px] uppercase tracking-widest text-accent">
-                          learning
-                        </span>
-                      )}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </Reveal>
-          ))}
-        </div>
+      <div className="mt-10 divide-y divide-line border-y border-line">
+        {stackLayers.map((layer) => (
+          <Reveal key={layer.name} className="grid gap-x-8 gap-y-4 py-7 md:grid-cols-5">
+            <div className="md:col-span-1">
+              <h3 className="font-semibold">{layer.name}</h3>
+              <p className="mt-1 text-sm leading-snug text-muted">{layer.note}</p>
+            </div>
+            <dl className="space-y-3 md:col-span-4">
+              {layer.groups.map((group) => (
+                <div key={group.label} className="grid gap-1 sm:grid-cols-[5.5rem_1fr] sm:gap-4">
+                  <dt className="mono pt-0.5 text-muted">{group.label}</dt>
+                  <dd className="text-[0.95rem] leading-relaxed">{group.items.join("  ·  ")}</dd>
+                </div>
+              ))}
+            </dl>
+          </Reveal>
+        ))}
       </div>
-    </section>
+    </Section>
   );
 }

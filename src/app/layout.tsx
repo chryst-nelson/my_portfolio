@@ -2,55 +2,38 @@ import type React from "react";
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import localFont from "next/font/local";
+import "@fontsource-variable/schibsted-grotesk";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ChatProvider } from "@/lib/chat/ChatProvider";
 import { profile, socials } from "@/lib/site-data";
 
 // Self-hosted (SIL OFL) so builds and CI never depend on Google Fonts.
-const geist = localFont({
-  src: "../fonts/Geist-Variable.woff2",
-  weight: "100 900",
-  variable: "--font-geist",
-  display: "swap",
-});
 const geistMono = localFont({
   src: "../fonts/GeistMono-Variable.woff2",
   weight: "100 900",
   variable: "--font-geist-mono",
   display: "swap",
 });
-const instrument = localFont({
-  src: [
-    {
-      path: "../fonts/InstrumentSerif-Regular.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../fonts/InstrumentSerif-Italic.woff2",
-      weight: "400",
-      style: "italic",
-    },
-  ],
-  variable: "--font-instrument",
-  display: "swap",
-});
 
 const title = `${profile.name} — ${profile.role}`;
-const description = `${profile.role} building responsive web and mobile apps with React, Next.js, Tailwind CSS and React Native. Also growing in Spring Boot and Java.`;
+const description = `${profile.positioning}. React, Next.js and Tailwind on the front, Node and Spring Boot behind it, shipped with Docker and GitHub Actions.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(profile.siteUrl),
   title,
   description,
   keywords: [
-    "Frontend Developer",
+    "Frontend Engineer",
+    "Full Stack Developer",
+    "DevOps",
     "React",
     "Next.js",
     "Tailwind CSS",
     "React Native",
     "Spring Boot",
+    "Docker",
+    "GitHub Actions",
     "portfolio",
     "Nigeria",
   ],
@@ -71,8 +54,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f5f2ea" },
-    { media: "(prefers-color-scheme: dark)", color: "#0c0c0d" },
+    { media: "(prefers-color-scheme: light)", color: "#f2f0ea" },
+    { media: "(prefers-color-scheme: dark)", color: "#0e1013" },
   ],
 };
 
@@ -91,6 +74,8 @@ const personJsonLd = {
     "Tailwind CSS",
     "React Native",
     "Spring Boot",
+    "Docker",
+    "GitHub Actions",
   ],
   alumniOf: {
     "@type": "CollegeOrUniversity",
@@ -106,11 +91,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      className={`${geist.variable} ${geistMono.variable} ${instrument.variable}`}
-      suppressHydrationWarning
-    >
+    <html lang="en" className={geistMono.variable} suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"
@@ -120,7 +101,7 @@ export default function RootLayout({
       <body>
         <ThemeProvider
           attribute="data-theme"
-          defaultTheme="dark"
+          defaultTheme="light"
           themes={["light", "dark"]}
           enableSystem={false}
         >

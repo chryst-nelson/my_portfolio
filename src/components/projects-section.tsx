@@ -1,62 +1,55 @@
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import Reveal from "@/components/reveal";
-import SectionHeading from "@/components/section-heading";
-import { projects } from "@/lib/site-data";
+import Section from "@/components/section-heading";
+import { projects, socials } from "@/lib/site-data";
 
 export default function ProjectsSection() {
   return (
-    <section
-      id="projects"
-      className="border-t border-line bg-surface/40 py-24 lg:py-32"
-    >
-      <div className="wrap">
-        <SectionHeading
-          index="04"
-          label="Projects"
-          title={
-            <>
-              Selected <em className="text-accent">work.</em>
-            </>
-          }
-        />
+    <Section id="work" label="Selected work">
+      <ol className="divide-y divide-line border-y border-line">
+        {projects.map((project, i) => (
+          <li key={project.id}>
+            <Reveal className="grid gap-x-8 gap-y-5 py-9 first:pt-8 md:grid-cols-5">
+              <div className="md:col-span-2">
+                <p className="mono text-muted">{String(i + 1).padStart(2, "0")} · {project.kind}</p>
+                <h3 className="mt-2 text-2xl font-semibold tracking-tight">{project.title}</h3>
+                <p className="mono mt-4 leading-relaxed text-muted">{project.technologies.join(" / ")}</p>
+              </div>
 
-        <ol className="border-b border-line">
-          {projects.map((project, i) => (
-            <Reveal key={project.id}>
-              <li className="grid gap-6 border-t border-line py-10 transition-colors hover:bg-surface/60 lg:grid-cols-12 lg:gap-8">
-                <div className="eyebrow lg:col-span-3">
-                  <p className="text-fg">
-                    <span className="text-accent">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>{" "}
-                    / {project.kind}
-                  </p>
-                  {project.status === "in-progress" && (
-                    <p className="mt-2 inline-block bg-accent px-2 py-1 !text-accent-fg">
-                      In progress
-                    </p>
-                  )}
-                </div>
+              <div className="md:col-span-3">
+                <p className="leading-relaxed">{project.summary}</p>
 
-                <div className="lg:col-span-9">
-                  <h3 className="font-display text-3xl leading-tight sm:text-4xl">
-                    {project.title}
-                  </h3>
-                  <p className="mt-4 max-w-2xl leading-relaxed text-muted">
-                    {project.summary}
-                  </p>
-                  <ul className="mt-6 flex flex-wrap gap-2">
-                    {project.technologies.map((tech) => (
-                      <li key={tech}>
-                        <span className="chip">{tech}</span>
-                      </li>
+                {project.layers && (
+                  <dl className="mt-6 divide-y divide-line border-t border-line text-sm">
+                    {project.layers.map((layer) => (
+                      <div key={layer.name} className="grid gap-1 py-3 sm:grid-cols-[6.5rem_1fr] sm:gap-4">
+                        <dt className="font-semibold">{layer.name}</dt>
+                        <dd className="leading-relaxed text-muted">{layer.text}</dd>
+                      </div>
                     ))}
-                  </ul>
-                </div>
-              </li>
+                  </dl>
+                )}
+
+                {project.link && (
+                  <Link href={project.link.href} className="link mt-5 inline-flex items-center gap-1.5 text-sm font-medium">
+                    {project.link.label}
+                    <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
+                  </Link>
+                )}
+              </div>
             </Reveal>
-          ))}
-        </ol>
-      </div>
-    </section>
+          </li>
+        ))}
+      </ol>
+
+      <p className="mt-6 text-sm text-muted">
+        More code on{" "}
+        <a href={socials.github} target="_blank" rel="noopener noreferrer" className="link text-fg">
+          GitHub
+        </a>
+        .
+      </p>
+    </Section>
   );
 }

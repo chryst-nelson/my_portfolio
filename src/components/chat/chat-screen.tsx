@@ -5,7 +5,9 @@ import Link from "next/link";
 import { ArrowUpRight, Loader2, Send } from "lucide-react";
 import ThemeToggle from "@/components/theme-toggle";
 import { MessageBubble } from "@/components/chat/message-bubble";
+import { MAINTENANCE_MESSAGE } from "@/lib/api/status";
 import { useChat } from "@/lib/chat/ChatProvider";
+import { useBackendStatus } from "@/lib/chat/useBackendStatus";
 import type { ChatMode } from "@/lib/chat/types";
 import { profile } from "@/lib/site-data";
 
@@ -19,11 +21,14 @@ const PROMPTS = [
   `Tell me about ${profile.shortName}`,
   "What technologies does he use?",
   "Show me his best projects",
-  "What is he currently learning?",
+  "How does he work across frontend and backend?",
 ];
 
 export default function ChatScreen() {
   const { messages, sendMessage, isStreaming, error, mode, setMode, clear } = useChat();
+  const backend = useBackendStatus();
+  const { markDown } = backend;
+  const offline = backend.status === "down";
   const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -31,6 +36,11 @@ export default function ChatScreen() {
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+
+  // A failed send that looks like an outage flips the page into maintenance mode.
+  useEffect(() => {
+    if (error === MAINTENANCE_MESSAGE) markDown();
+  }, [error, markDown]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -49,13 +59,13 @@ export default function ChatScreen() {
   function submit(event: FormEvent) {
     event.preventDefault();
     const text = input.trim();
-    if (!text || isStreaming) return;
+    if (!text || isStreaming || offline) return;
     setInput("");
     void send(text);
   }
 
   function pick(prompt: string) {
-    if (isStreaming) return;
+    if (isStreaming || offline) return;
     void send(prompt);
   }
 
@@ -64,7 +74,7 @@ export default function ChatScreen() {
       <header className="border-b border-line">
         <div className="wrap flex max-w-3xl items-center justify-between gap-3 py-3">
           <div>
-            <p className="font-display text-xl leading-none">{profile.shortName}</p>
+            <p className="text-lg font-semibold leading-none tracking-tight">{profile.shortName}</p>
             <p className="eyebrow mt-1.5">Ask · answers from verified data</p>
           </div>
           <div className="flex items-center gap-2">
@@ -78,7 +88,7 @@ export default function ChatScreen() {
                 New chat
               </button>
             )}
-            <Link href="/portfolio" className="btn !px-4 !py-2.5">
+            <Link href="/" className="btn !px-4 !py-2.5">
               Portfolio
               <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
             </Link>
@@ -105,11 +115,29 @@ export default function ChatScreen() {
 
       <div className="flex-1 overflow-y-auto" aria-live="polite">
         <div className="wrap max-w-3xl space-y-4 py-6">
+          {offline && (
+            <div role="status" className="border border-line-strong bg-surface p-5">
+              <p className="font-semibold">The assistant is under maintenance.</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted">
+                The server is offline for a short while. The portfolio itself is unaffected, and this page will
+                reconnect on its own.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Link href="/" className="btn btn-solid !px-4 !py-2.5">
+                  View the portfolio
+                </Link>
+                <button type="button" onClick={() => void backend.recheck()} className="btn !px-4 !py-2.5">
+                  Try again
+                </button>
+              </div>
+            </div>
+          )}
           {messages.length === 0 ? (
+            offline ? null : (
             <div className="pt-8 sm:pt-16">
               <p className="eyebrow">Hi, I&apos;m {profile.shortName}</p>
-              <h1 className="mt-4 font-display text-5xl leading-[1.05] sm:text-6xl">
-                Instead of browsing my portfolio, <em>ask.</em>
+              <h1 className="mt-4 text-4xl font-semibold leading-[1.06] tracking-[-0.03em] sm:text-5xl">
+                Instead of browsing my portfolio, <span className="marker">ask.</span>
               </h1>
               <div className="mt-8 flex flex-wrap gap-2">
                 {PROMPTS.map((p) => (
@@ -119,10 +147,11 @@ export default function ChatScreen() {
                 ))}
               </div>
             </div>
+            )
           ) : (
             messages.map((m) => <MessageBubble key={m.id} message={m} />)
           )}
-          {error && (
+          {error && !offline && error !== MAINTENANCE_MESSAGE && (
             <p role="alert" className="border border-[#e5484d] px-3 py-2 text-sm text-[#e5484d]">
               {error}
             </p>
@@ -138,14 +167,14 @@ export default function ChatScreen() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             maxLength={2000}
-            placeholder={`Ask about ${profile.shortName}'s work…`}
-            disabled={isStreaming}
+            placeholder={offline ? "Assistant is offline for maintenance" : `Ask about ${profile.shortName}'s work…`}
+            disabled={isStreaming || offline}
             aria-label="Your question"
             className="field !border-b-0 border border-line-strong !px-3 !py-2.5 !text-sm"
           />
           <button
             type="submit"
-            disabled={isStreaming || !input.trim()}
+            disabled={isStreaming || offline || !input.trim()}
             aria-label="Send message"
             className="btn btn-solid !p-0 h-[42px] w-[42px] shrink-0"
           >

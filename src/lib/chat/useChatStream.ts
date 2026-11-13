@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { ChatMessageResponse, ChatMode } from "@/lib/chat/types";
 
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080").replace(/\/$/, "");
+import { API_BASE_URL, MAINTENANCE_MESSAGE, isMaintenanceStatus } from "@/lib/api/status";
 
 export interface ChatMessage {
   id: string;
@@ -83,6 +83,7 @@ export function useChatStream() {
       });
 
       if (!res.ok) {
+        if (isMaintenanceStatus(res.status)) throw new Error(MAINTENANCE_MESSAGE);
         throw new Error(await extractErrorMessage(res));
       }
       if (!res.body) {
@@ -128,7 +129,12 @@ export function useChatStream() {
       }
     } catch (err) {
       failed = true;
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      // fetch() rejects with a TypeError when the server is unreachable (off, or blocked by CORS on a proxy error page).
+      if (err instanceof TypeError) {
+        setError(MAINTENANCE_MESSAGE);
+      } else {
+        setError(err instanceof Error ? err.message : "Something went wrong.");
+      }
     } finally {
       if (failed) discardExchange();
       setIsStreaming(false);

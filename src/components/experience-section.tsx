@@ -1,72 +1,38 @@
 import Reveal from "@/components/reveal";
-import SectionHeading from "@/components/section-heading";
+import Section from "@/components/section-heading";
 import { experience } from "@/lib/site-data";
 
 export default function ExperienceSection() {
   return (
-    <section id="experience" className="py-24 lg:py-32">
-      <div className="wrap">
-        <SectionHeading
-          index="03"
-          label="Experience"
-          title={
-            <>
-              Where I&apos;ve <em className="text-accent">shipped.</em>
-            </>
-          }
-        />
-
-        <div className="border-b border-line">
-          {experience.map((entry) => (
-            <Reveal key={`${entry.company}-${entry.period}`}>
-              <article className="grid gap-6 border-t border-line py-10 transition-colors hover:bg-surface/60 lg:grid-cols-12 lg:gap-8">
-                <div className="eyebrow lg:col-span-3">
-                  <p className="text-fg">{entry.period}</p>
-                  <p className="mt-2">{entry.mode}</p>
-                </div>
-
-                <div className="lg:col-span-9">
-                  <h3 className="font-display text-3xl leading-tight sm:text-4xl">
-                    {entry.role}
-                  </h3>
-                  <p className="mt-2 text-muted">{entry.company}</p>
-
-                  {entry.highlight && (
-                    <div className="mt-8 flex items-center gap-5 border border-line-strong p-5 sm:max-w-md">
-                      <span className="font-display text-6xl leading-none text-accent">
-                        {entry.highlight.value}
-                      </span>
-                      <span className="text-sm leading-snug text-muted">
-                        {entry.highlight.label}
-                      </span>
-                    </div>
-                  )}
-
-                  <ul className="mt-8 space-y-3">
-                    {entry.bullets.map((bullet) => (
-                      <li key={bullet} className="flex gap-4 leading-relaxed">
-                        <span
-                          className="mt-[0.7em] h-px w-4 shrink-0 bg-accent"
-                          aria-hidden="true"
-                        />
-                        <span className="text-muted">{bullet}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <ul className="mt-8 flex flex-wrap gap-2">
-                    {entry.tags.map((tag) => (
-                      <li key={tag}>
-                        <span className="chip">{tag}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </article>
+    <Section id="experience" label="Experience">
+      <ol className="divide-y divide-line border-y border-line">
+        {experience.map((job) => (
+          <li key={`${job.company}-${job.period}`}>
+            <Reveal className="grid gap-x-8 gap-y-4 py-8 md:grid-cols-5">
+              <div className="md:col-span-2">
+                <p className="mono text-muted">{job.period}</p>
+                <h3 className="mt-2 text-xl font-semibold tracking-tight">{job.role}</h3>
+                <p className="mt-1 text-muted">
+                  {job.company} · {job.mode}
+                </p>
+                {job.highlight && (
+                  <p className="mt-5 flex items-baseline gap-3">
+                    <span className="text-4xl font-semibold tracking-tight text-accent">{job.highlight.value}</span>
+                    <span className="max-w-[11rem] text-sm leading-snug text-muted">{job.highlight.label}</span>
+                  </p>
+                )}
+              </div>
+              <ul className="space-y-3 md:col-span-3">
+                {job.bullets.map((bullet) => (
+                  <li key={bullet} className="relative pl-5 leading-relaxed before:absolute before:left-0 before:top-[0.72em] before:h-px before:w-3 before:bg-line-strong">
+                    {bullet}
+                  </li>
+                ))}
+              </ul>
             </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
+          </li>
+        ))}
+      </ol>
+    </Section>
   );
 }

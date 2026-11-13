@@ -1,6 +1,5 @@
 import axios, { type AxiosError } from "axios";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+import { API_BASE_URL, MAINTENANCE_MESSAGE, isMaintenanceStatus } from "@/lib/api/status";
 
 const httpClient = axios.create({
   baseURL: API_BASE_URL,
@@ -50,6 +49,10 @@ export async function apiFetch<T>(path: string, options: FetchOptions = {}): Pro
   } catch (err) {
     const axiosError = err as AxiosError<ApiErrorBody>;
 
+    if (axiosError.response && isMaintenanceStatus(axiosError.response.status)) {
+      throw new ApiRequestError(axiosError.response.status, MAINTENANCE_MESSAGE);
+    }
+
     if (axiosError.response) {
       const message =
         axiosError.response.data?.message ?? `Request failed with status ${axiosError.response.status}`;
@@ -58,6 +61,6 @@ export async function apiFetch<T>(path: string, options: FetchOptions = {}): Pro
 
     // No response at all: network failure, backend down, or a CORS rejection
     // the browser never lets JS read the details of.
-    throw new ApiRequestError(0, "Couldn't reach the server. Check that the backend is running and reachable.");
+    throw new ApiRequestError(0, MAINTENANCE_MESSAGE);
   }
 }

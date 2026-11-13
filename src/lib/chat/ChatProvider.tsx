@@ -23,7 +23,7 @@ type ChatContextValue = Omit<ReturnType<typeof useChatStream>, "setMessages"> & 
 const ChatContext = createContext<ChatContextValue | null>(null);
 
 // Lives in the root layout so the conversation survives client-side navigation
-// (/ <-> /portfolio) and, via sessionStorage, a page refresh.
+// (/ <-> /ask) and, via sessionStorage, a page refresh.
 export function ChatProvider({ children }: { children: ReactNode }) {
   const chat = useChatStream();
   const { messages, setMessages, isStreaming } = chat;

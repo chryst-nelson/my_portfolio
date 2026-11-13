@@ -1,26 +1,21 @@
 import type { ReactNode } from "react";
 
-interface SectionHeadingProps {
-  index: string;
+interface SectionProps {
+  id: string;
   label: string;
-  title: ReactNode;
+  children: ReactNode;
 }
 
-export default function SectionHeading({
-  index,
-  label,
-  title,
-}: SectionHeadingProps) {
+/** Ruled section: a short label in the left rail, content on the right. */
+export default function Section({ id, label, children }: SectionProps) {
   return (
-    <div className="mb-12 grid gap-5 border-t border-line pt-6 lg:mb-16 lg:grid-cols-12">
-      <p className="eyebrow lg:col-span-3">
-        <span className="text-accent">{index}</span>
-        <span aria-hidden="true"> / </span>
-        {label}
-      </p>
-      <h2 className="font-display text-4xl leading-[1.03] tracking-tight sm:text-5xl lg:col-span-9 lg:text-6xl">
-        {title}
-      </h2>
-    </div>
+    <section id={id} className="border-t border-line py-14 lg:py-20">
+      <div className="wrap grid gap-x-10 gap-y-8 lg:grid-cols-12">
+        <h2 className="label lg:col-span-3">
+          <span className="lg:sticky lg:top-24 lg:block">{label}</span>
+        </h2>
+        <div className="lg:col-span-9">{children}</div>
+      </div>
+    </section>
   );
 }
